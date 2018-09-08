@@ -82,29 +82,6 @@ int ke_p3p_fair(const cvl::Data<T>& data,
 
         if(data.good_solutions(Rs[sols],Ts[sols])) sols++;
 
-        /*
-        // needed to test the solutions...
-bool good=true;
-
-        // verify the solution:
-        for(int j=0;j<3;++j){
-            // must be infront
-            if((Rs[sols]*data.x0[j] +Ts[sols])[2]<=0) good=false;
-
-        }
-        // must actually have a near zero reprojection errror
-        T err=0;
-        //for(int j=0;j<3;++j)  err+=((Rs[sols]*data.x0[j] +Ts[sols]).dehom() - ((data.xr[j]).dehom())).abs().sum();
-        //if(err>1e-8) good=false;
-
-        // must also be a rotation matrix
-        if(std::abs(Rs[sols].determinant()-1)>1e-6)                good=false;
-        if(((Rs[sols].transpose()*Rs[sols]) -cvl::Matrix<T,3,3>(1,0,0,0,1,0,0,0,1)  ).abs().sum()>1e-6)                good=false;
-if(good)
-    sols++;
-*/
-
-
     }
     // exit(1);
     return sols;

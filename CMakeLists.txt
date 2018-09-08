@@ -62,11 +62,11 @@ message("\n -- Eigen_INCLUDE_DIRS: ${EIGEN_INCLUDE_DIRS}")
 #including headers here make them show up in older ides
 
 set(lambdatwist-srcs "")
-list(APPEND lambdatwist-srcs lamdatwist/p3p_timers.h)
-list(APPEND lambdatwist-srcs lamdatwist/lambdatwist.p3p.h)
-list(APPEND lambdatwist-srcs lamdatwist/solve_cubic.h)
-list(APPEND lambdatwist-srcs lamdatwist/solve_eig0.h)
-list(APPEND lambdatwist-srcs lamdatwist/refine_lambda.h)
+list(APPEND lambdatwist-srcs lambdatwist/p3p_timers.h)
+list(APPEND lambdatwist-srcs lambdatwist/lambdatwist.p3p.h)
+list(APPEND lambdatwist-srcs lambdatwist/solve_cubic.h)
+list(APPEND lambdatwist-srcs lambdatwist/solve_eig0.h)
+list(APPEND lambdatwist-srcs lambdatwist/refine_lambda.h)
 
 set(kneip-srcs "")
 list(APPEND kneip-srcs kneip/kneip.h)
@@ -103,8 +103,8 @@ list(APPEND util-srcs solver.h)
 list(APPEND util-srcs mnumerics.h)
 list(APPEND util-srcs p3p_generator.h)
 
-
-add_executable(main main.cpp ${util-srcs} ${ke-srcs} ${kneip-srcs})
+# headers are included for ide benefit...
+add_executable(main main.cpp ${util-srcs} ${ke-srcs} ${kneip-srcs} ${lambdatwist-srcs})
 
 
 

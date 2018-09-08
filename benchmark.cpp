@@ -212,7 +212,7 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
         //
     }
     {
-        // duplicates
+        // unique valid
         std::vector<int> duplicates;
         for(auto r:res) duplicates.push_back(r.solutions - r.duplicates);
         rows.push_back(toStrVec(duplicates));
@@ -242,55 +242,9 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
         std::string str=display(errors,headers);
     }
 
-/*
-    {
-        // clear the screen
-        cout << "\033[2J\033[1;1H"; cout.flush();
 
+//         cout << "\033[2J\033[1;1H"; cout.flush();
 
-        std::vector<std::string> headers={"kneip","lambda","ke"};
-
-        std::vector<std::vector<std::string>> rows;
-
-        rows.push_back(toStrVec<int>({kneip.ground_truth_in_set, lambda.ground_truth_in_set, ke.ground_truth_in_set}));
-        rows.push_back(toStrVec<double>({ (double)kneip.ground_truth_in_set/datas.size(), (double)lambda.ground_truth_in_set/datas.size(),(double)ke.ground_truth_in_set/datas.size()}));
-
-        rows.push_back(toStrVec<int>({ kneip.valid, lambda.valid,ke.valid}));
-        rows.push_back(toStrVec<int>({ kneip.get_incorrect_valid(),
-                                       lambda.get_incorrect_valid(),
-                                       ke.get_incorrect_valid()}));
-
-        rows.push_back(toStrVec<int>({ kneip.solutions, lambda.solutions,ke.solutions}));
-        rows.push_back(toStrVec<int>({ kneip.duplicates, lambda.duplicates,ke.duplicates}));
-
-        rows.push_back(toStrVec<int>({kneip.solutions -kneip.duplicates, lambda.solutions -lambda.duplicates,ke.solutions -ke.duplicates}));
-
-        cout<<displayTable(headers,rows,{"good: ","ratio: ","alg sols"," incorrect_sols: ", " verified solutions: ","dups:","unique correct solutions"},"Table: ")<<endl;
-
-        std::vector<std::vector<T>> tmp={kneip.errors,lambda.errors,ke.errors};
-
-        std::string str=display(tmp,{"kneip","lambda","ke"});
-
-        cout<<str<<endl;
-    }
-
-    if(datas.size()<=10000000 && false){
-        {
-            {
-
-                cout<<kneip.errors.size()<<endl;
-                std::ofstream out("numerics.csv");
-                //out<<"# row order is kneip,lambda, Ke\n";
-
-                //  out<<mlib::getCSV<double>(kneip.errors)<<"\n";
-                //  out<<mlib::getCSV<double>(lambda.errors)<<"\n";
-                //  out<<mlib::getCSV<double>(ke.errors)<<"\n";
-                out<<endl;
-            }
-        }
-    }
-    cout<<"Test - done! "<<endl;
-    */
 }
 
 
