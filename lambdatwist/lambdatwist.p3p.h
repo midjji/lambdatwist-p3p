@@ -300,7 +300,7 @@ int p3p_lambdatwist( Vector3<T> y1,
                     d12(1),d13(1),d12xd13(1),
                     d12(2),d13(2),d12xd13(2));
     X=X.inverse();
-    int solutions=0;
+
     for(int i=0;i<valid;++i){
         //cout<<"Li="<<Ls(i)<<endl;
 
@@ -318,10 +318,9 @@ int p3p_lambdatwist( Vector3<T> y1,
                         yd1(2),yd2(2),yd1xd2(2));
 
 
-        Rs[solutions]=Y*X;
-        Ts[solutions]=(ry1 - Rs[i]*x1 );
-        if(!std::isnan(Ts[solutions][0] + Ts[solutions][1] + Ts[solutions][2]))
-            solutions++;
+        Rs[i]=Y*X;
+        Ts[i]=(ry1 - Rs[i]*x1 );
+        //if(!std::isnan(Ts[solutions][0] + Ts[solutions][1] + Ts[solutions][2]))            solutions++;
 
         //Ts[i]=(ry1 - Rs[i]*x1 + ry2 - Rs[i]*x2 +ry3 - Rs[i]*x3)/3.0;
 

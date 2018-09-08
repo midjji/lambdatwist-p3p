@@ -134,8 +134,11 @@ template<class T, class Solver> P3PResult<T> compute_accuracy(Solver S, std::vec
 
         int duplicates=0;
         int sols=data.good_solutions(Rs,Ts,valid,duplicates); // valid according to data(harsher)
+
+
         if(sols==0)
-            res.ground_truth_in_set++;
+            res.no_solution++;
+
         if(valid>sols)
             res.incorrect_valid+=valid-sols;
 
@@ -184,11 +187,19 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
         columns.push_back("ground truth found");
     }
     {
+        // number of times a valid solution was found
+        std::vector<int> gt;
+        for(auto r:res) gt.push_back(datas.size() - r.no_solution);
+        rows.push_back(toStrVec(gt));
+        columns.push_back("any solution found");
+    }
+    {
         // ratio for ground truth found
         std::vector<double> gtratio;for(auto r:res) gtratio.push_back((double)r.ground_truth_in_set/datas.size());
         rows.push_back(toStrVec(gtratio));
         columns.push_back("ground truth found ratio");
     }
+
     {
         // number of no solution at all found
         std::vector<int> nosol;

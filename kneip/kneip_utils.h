@@ -31,23 +31,6 @@ int kneip_p3p_fair(const cvl::Data<T>& data,
         Ts[sols]=-Rs[sols]*t;
 
         if(data.good_solutions(Rs[sols],Ts[sols])) sols++;
-        /*
-        if(!(R.isnan() || t.isnan() )){
-
-
-
-            // check if the solutions are valid and return the valid ones...
-            bool good=true;
-            // verify the solution:
-            for(int j=0;j<3;++j)
-                if((Rs[sols]*data.x0[j] +Ts[sols])[2]<=0) good=false;
-            // verify the repojection error?
-            if(good){
-                sols++;
-            }
-        }
-    }
-    */
     }
     return sols;
 }
