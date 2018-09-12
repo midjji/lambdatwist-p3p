@@ -54,7 +54,7 @@ template<class T>   void eigwithknown0(Matrix3x3<T> x,
     T tmp=1.0/(e*(x(0,0) + x(1,1)) + mx0011 - e*e + x01_squared);
     T a1= -(e*x(0,2) + prec_0)*tmp;
     T a2= -(e*x(1,2) + prec_1)*tmp;
-    T rnorm=(std::sqrt((T)1.0)/(a1*a1 +a2*a2 + 1.0));
+    T rnorm=((T)1.0)/std::sqrt(a1*a1 +a2*a2 + 1.0);
     a1*=rnorm;
     a2*=rnorm;
     Vector3<T>  v1(a1,a2,rnorm);
@@ -80,6 +80,7 @@ template<class T>   void eigwithknown0(Matrix3x3<T> x,
     // v2=(v2-v1.dot(v2)*v2);v2.normalize();
 
 E=Matrix<T,3,3>(v1[0],v2[0],v3[0],  v1[1],v2[1],v3[1],  v1[2],v2[2],v3[2]);
+
 TOC(teig1);
 }
 

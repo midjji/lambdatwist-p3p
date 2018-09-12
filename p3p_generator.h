@@ -74,12 +74,6 @@ public:
         }
 
 
-        // the reconstructed points must be inside the -1,1 of the second image...
-        bool visible_by_both=true;
-        for(auto x:x0){
-            auto y=x.dehom();
-            if(y.absMax()>1) visible_by_both=false;
-        }
         // collinearity or identity are degenerate configurations and should be avoided.
         bool colinear=false;
         {
