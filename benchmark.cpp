@@ -21,15 +21,20 @@
  *
  * Standardize input output format,
  * The speed comparison is primarily between two methods that output rotation matrixes. Therefore use that as basis.
- * The ke uses a retarded format to maximize their speed...
+ * The ke uses a silly format to maximize their speed...
  * convert to something resonable on output since it would always be followed by that anyways.
  *
  * Internally the methods should test the feasibility of the returned solutions, given the three points.
- * Ie dont return invalid solutions, nans, non rotations, transforms that move points behind cameras, or large reprojection errors
+ * Ie dont return geometrically invalid solutions, nans, non rotations, transforms that move points behind cameras, or large reprojection errors
  * If they fail to do this it will always be done directly after.
  *
  * It would be very natural to use inheritance to create a nice modular structure for the benchmark. Doing so would hide the performance however,
  *  as vtable lookups take quite some time compared to the 300ns or so that the routines take to run... yes I tried it...
+ *
+ *
+ *   Terms:
+ * a valid solution is one considered valid by the solver, should always atleast test for geometric feasibility and nans
+ * a correct solution is one which is both valid and satisfies the rotation matrix and reprojection criteria.
  *
  *
  * **/
@@ -133,16 +138,16 @@ template<class T, class Solver> P3PResult<T> compute_accuracy(Solver S, std::vec
 
 
         int duplicates=0;
-        int sols=data.good_solutions(Rs,Ts,valid,duplicates); // valid according to data(harsher)
+        int sols=data.good_solutions(Rs,Ts,valid,duplicates); // correct, with duplicates included
 
 
         if(sols==0)
             res.no_solution++;
 
         if(valid>sols)
-            res.incorrect_valid+=valid-sols;
+            res.incorrect_valid+=(valid-sols);
 
-        res.solutions+=sols;
+        res.solutions+=(sols - duplicates); // correct unique
         res.duplicates+=duplicates;
 
         T error=data.min_error(Rs,Ts,valid);
@@ -212,7 +217,7 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
         std::vector<int> solutions;
         for(auto r:res) solutions.push_back(r.valid);
         rows.push_back(toStrVec(solutions));
-        columns.push_back("solutions");
+        columns.push_back("valid according to solver");
     }
     {
         // duplicates
@@ -223,11 +228,11 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
         //
     }
     {
-        // unique valid
-        std::vector<int> duplicates;
-        for(auto r:res) duplicates.push_back(r.solutions - r.duplicates);
-        rows.push_back(toStrVec(duplicates));
-        columns.push_back("solutions - duplicates");
+        // unique correct
+        std::vector<int> usols;
+        for(auto r:res) usols.push_back(r.solutions);
+        rows.push_back(toStrVec(usols));
+        columns.push_back("unique correct solutions");
         //
     }
     {
@@ -235,14 +240,7 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
         std::vector<int> solutions;
         for(auto r:res) solutions.push_back(r.incorrect_valid);
         rows.push_back(toStrVec(solutions));
-        columns.push_back("incorrect valid solutions");
-    }
-    {
-        // correct valid unique solutions
-        std::vector<int> solutions;
-        for(auto r:res) solutions.push_back(r.solutions - r.duplicates -r.incorrect_valid);
-        rows.push_back(toStrVec(solutions));
-        columns.push_back("correct valid unique");
+        columns.push_back("incorrect solutuons output by the solver");
     }
 
 

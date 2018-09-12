@@ -43,13 +43,13 @@ std::string getIsoDateTime()
 
     struct tm T;
     localtime_s(&T, &seconds);
-    now << std::put_time(&T, "%Y-%m-%d %H-%M-%S.");
+   // now << std::put_time(&T, "%Y-%m-%d %H-%M-%S.");
 
 #else
 
 #define HAS_STD_PUT_TIME 1
 #if HAS_STD_PUT_TIME
-    now << std::put_time( localtime( &seconds ), "%Y-%m-%d %H-%M-%S." );
+//    now << std::put_time( localtime( &seconds ), "%Y-%m-%d %H-%M-%S." );
 #else
 //# warning "deprecated fallback for std::put_time!"
     char buffer[25]; // holds "2013-12-01 21:31:42"

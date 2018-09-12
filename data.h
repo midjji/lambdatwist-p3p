@@ -90,6 +90,14 @@ public:
         return min_error;
     }
 
+
+    /**
+     * @brief good_solutions
+     * @param R
+     * @param t
+     * @param full
+     * @return true if the solution is geometrically feasible and has a resonably low reprojection error and the matrix is a rotation matrix.
+     */
     bool good_solutions(cvl::Matrix<T,3,3> R,
                         cvl::Vector3<T> t, bool full=false)  const{
         // note there may be more valid solutions beyond the one which generated the sample!
@@ -98,6 +106,8 @@ public:
         //if((R.isnan()  || t.isnan())) return false;
         // verify points infront , kneip and ke fail this one
         for(int j=0;j<3;++j)             if((R*x0[j] +t)[2]<0) return false;
+
+        if(!(R.isnormal() && t.isnormal())) return false;
 
         if(full){
             // verify rotation matrix
@@ -115,7 +125,14 @@ public:
     }
 
 
-
+    /**
+     * @brief good_solutions returns the number of valid correct solutions including duplicates
+     * @param Rs
+     * @param Ts
+     * @param valid
+     * @param duplicates
+     * @return
+     */
     int good_solutions(cvl::Vector<cvl::Matrix<T,3,3>,4>& Rs,
                        cvl::Vector<cvl::Vector3<T>,4>& Ts, int valid, int& duplicates){
         // all valid solutions must be in the start of the Vector, no invalid solutions after the first bad one!
@@ -126,6 +143,8 @@ public:
         for(int i=0;i<valid;++i){
             if(!good_solutions(Rs[i],Ts[i],true)) continue;
 
+
+            // solution is good, check for duplicates
             goods++;
             bool dup=false;
 

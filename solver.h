@@ -10,8 +10,8 @@ public:
     // number of times that not a single valid solution was output!
     int no_solution=0;
 
-    // number of times the ground tru
-    int ground_truth_in_set=0; // good
+    // number of times the ground truth was found
+    int ground_truth_in_set=0;
 
     // correct solutions according to solver
     int valid=0;
