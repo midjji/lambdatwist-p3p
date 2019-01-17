@@ -1,4 +1,8 @@
 # lambdatwist-p3p 
+A simple, easy to understand p3p solver with state of the art performance.
+http://openaccess.thecvf.com/content_ECCV_2018/html/Mikael_Persson_Lambda_Twist_An_ECCV_2018_paper.html
+
+
 first cleaned draft,
 
 
