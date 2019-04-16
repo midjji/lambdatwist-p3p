@@ -124,7 +124,7 @@ public:
         }
 
         Vector4d q=getRotationQuaternion(R);
-        if(std::abs(q.length()-1)>1e-8) return false;
+        if(std::abs(q.length()-1)>1e-4) return false;
 
 
         return true;
