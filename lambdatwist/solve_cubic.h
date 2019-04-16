@@ -2,11 +2,10 @@
 
 
 #include <math.h>
-#include <iostream>
-#include <mnumerics.h>
 
-using std::cout;
-using std::endl;
+
+
+
 
 namespace cvl{
 
@@ -14,13 +13,7 @@ namespace cvl{
 template<class T> inline bool root2real(T b, T c,T& r1, T& r2){
 
 
-#if 0
-    T v=b*b -4.0*c;
-    T y=std::sqrt(v);
-    r1= 0.5*(-b+y);
-    r2= 0.5*(-b-y);
-    return v>=0;
-#else
+
     T v=b*b -4.0*c;
     if(v<0){
         r1=r2=0.5*b;
@@ -28,7 +21,6 @@ template<class T> inline bool root2real(T b, T c,T& r1, T& r2){
     }
 
     T y=std::sqrt(v);
-
     if(b<0){
         r1= 0.5*(-b+y);
         r2= 0.5*(-b-y);
@@ -37,22 +29,9 @@ template<class T> inline bool root2real(T b, T c,T& r1, T& r2){
         r2= 2.0*c/(-b-y);
     }
     return true;
-#endif
 }
 
-template<class T> void root2real1(T a, T b, T c, T& r1, T& r2){
 
-    T y=std::sqrt(b*b -4.0*a*c);
-    if(b<0){
-
-        r1= (-b+y)/(2.0*a);
-        r2= (-b-y)/(2.0*a);
-
-    }else{
-        r1= 2.0*c/(-b+y);
-        r2= 2.0*c/(-b-y);
-    }
-}
 
 
 
@@ -98,6 +77,33 @@ public:
 #else
 #define ADD_CUBIC_COUNT_SAMPLE(sample)
 #endif
+
+
+
+
+template<class T> constexpr T get_numeric_limit(){ return 1e-13;
+    /*
+                                            cout<<"ef: "<<std::numeric_limits<float>::max_digits10<<endl;
+    cout<<"ed: "<<std::numeric_limits<double>::max_digits10<<endl;
+    cout<<"el: "<<std::numeric_limits<long double>::max_digits10<<endl;
+*/
+}
+template<> constexpr float get_numeric_limit<float>(){
+    // abs limit is 9 digits
+    return 1e-7;
+}
+template<> constexpr double get_numeric_limit<double>(){
+    // abs limit is 17 digits
+    return 1e-13;
+}
+template<> constexpr long double get_numeric_limit<long double>(){
+    // abs limit is 21 digits
+    return 1e-15 ;
+}
+
+
+
+
 /** 0.5* Number of Newton-Raphson iteratins
  *  ITER is a tuning parameter: incresing it makes the solutions more robust
  * but also more time consuming to compute in a small number of cases
@@ -136,8 +142,6 @@ public:
 template<class T> T cubick(T b, T c, T d){
 
     /* Choose initial solution */
-#if 1
-    //timer_a.tic();
     T r0;
     // not monotonic
     if (b*b  >= 3.0*c){
@@ -160,36 +164,16 @@ template<class T> T cubick(T b, T c, T d){
             //Find rightmost root of 0.5*(r0 -t2)^2*(6*t2+2*b) +  k1 = 0
             r0 = t2 + std::sqrt(-k/(3.0*t2 + b));
         }
-
-        //oscillating++;
     }
     else{
-        /*
-        r0=1.0/(cubick_inv(c/d,b/d,1.0/d));
-        // about half work...
-        if(std::abs((((r0+b)*r0+c)*r0+d))>1e-10)
-            */
         r0=-b/3.0;
         if(std::abs(((T(3.0)*r0+T(2.0)*b)*r0+c))<1e-4) r0+=1;
-        //else r0-=1;
-        //T fx=(((r0+b)*r0+c)*r0+d);           r0-=10;            if(fx<0) r0+=20;
-
     }
-    //timer_a.toc();
-#endif
-    //timer_b.tic();
-
-
-    //cout<<"base r0: "<<r0<<endl;
-
 
     /* Do ITER Newton-Raphson iterations */
     /* Break if position of root changes less than 1e.16 */
     //T starterr=std::abs(r0*(r0*(r0 + b) + c) + d);
     T fx,fpx;
-
-    //cout<<std::setprecision(18)<<get_numeric_limit<T>()<<endl;
-
 
     for (unsigned int cnt = 0; cnt < KLAS_P3P_CUBIC_SOLVER_ITER; ++cnt){
 

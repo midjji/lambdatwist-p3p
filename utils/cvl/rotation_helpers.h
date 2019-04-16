@@ -257,7 +257,7 @@ Vector4<T> getRotationQuaternion(const Matrix3x3<T>& R){
     T S;
 
     T tr =R.trace() +1.0;
-    if(tr>1e-7){
+    if(tr>1e-5){
         S = 0.5 / std::sqrt(tr);
         q[0] = 0.25 / S;
         q[1] = ( R(2,1) - R(1,2) ) * S;

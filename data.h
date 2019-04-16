@@ -107,6 +107,8 @@ public:
         // verify points infront , kneip and ke fail this one
         for(int j=0;j<3;++j)             if((R*x0[j] +t)[2]<0) return false;
 
+
+
         if(!(R.isnormal() && t.isnormal())) return false;
 
         if(full){
@@ -120,6 +122,11 @@ public:
             for(int j=0;j<3;++j)  err+=((R*x0[j] +t).dehom() - (xr[j].dehom())).abs().sum();
             if(err>1e-5) return false;
         }
+
+        Vector4d q=getRotationQuaternion(R);
+        if(std::abs(q.length()-1)>1e-4) return false;
+
+
         return true;
 
     }

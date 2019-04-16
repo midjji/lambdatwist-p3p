@@ -17,15 +17,10 @@ template<class T>   void eigwithknown0(Matrix3x3<T> x,
 
     //the known one...
     L(2)=0;
-#if 0
-    Vector3<T>  v3=x.Col(0).cross(x.Col(1));
-    // alt
-#else
+
     Vector3<T>  v3(x(3)*x(7)- x(6)*x(4),
                    x(6)*x(1)- x(7)*x(0),
                    x(4)*x(0)- x(3)*x(1));
-#endif
-
     v3.normalize();
 
 

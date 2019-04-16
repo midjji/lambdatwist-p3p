@@ -61,7 +61,7 @@ public:
             //Vector2d y((double)((float)randn(0,1)),(double)((float)randn(0,1)));
             Vector2<T> y(mlib::randu<long double>(-1,1),mlib::randu<long double>(-1,1));
           // y*=0.1;
-            T z=mlib::randu<long double>(0.1,10);// 0.1 to 10 is good
+            T z=mlib::randu<long double>(0.1,100);// 0.1 to 10 is good
             //T z=mlib::randu<long double>(0.9,1.1);// 0.1 to 1000 is good too
 
             Vector3<T> xri=z*y.homogeneous();

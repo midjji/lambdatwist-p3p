@@ -110,7 +110,7 @@ int p3p_lambdatwist( Vector3<T> y1,
 
     //p3 is essentially det(D2) so its definietly >0 or its degen
 
-    if(std::abs(p3)>=std::abs(p0)||true ){
+    {
         p3=1.0/p3;
         p2*=p3;
         p1*=p3;
@@ -123,11 +123,6 @@ int p3p_lambdatwist( Vector3<T> y1,
         // get sharpest real root of above...
 
         g=cubick(p2,p1,p0);
-    }
-    else{
-
-        // lower numerical performance
-        g=1.0/(cubick(p1/p0,p2/p0,p3/p0));
     }
 
     //  cout<<"g: "<<g<<endl;
