@@ -100,7 +100,7 @@ list(APPEND util-srcs benchmark.h)
 list(APPEND util-srcs benchmark.cpp)
 list(APPEND util-srcs data.h)
 list(APPEND util-srcs solver.h)
-list(APPEND util-srcs mnumerics.h)
+
 list(APPEND util-srcs p3p_generator.h)
 
 # headers are included for ide benefit...
@@ -110,6 +110,6 @@ message("=======================================================================
 message("The p3p solvers are under their respective folders,")
 message("Timing varies between compilers and processors, rankings are typically consistent however" )
 message("By default a reduced set of tests is performed for the solvers, \n this benefits ke and kneip in terms of speed, but also means lots of bad solutions are passed on")
-message("use the flag -DFULL_SOLUTION_TESTS to activate the full set of tests when performing timing comparisions.")
-message("\n the compiler is alloed to use sse intrinsics by default, this improves speed at the cost of numerical accuracy.\n some compilers succeed, others do not\n
+#message("use the flag -DFULL_SOLUTION_TESTS to activate the full set of tests when performing timing comparisions.")
+message("\n the compiler is allowed to use sse intrinsics by default, this improves speed at the cost of numerical accuracy.\n some compilers succeed, others do not\n
 This has a significant impact on the accuracy/speed of kes method")

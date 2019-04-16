@@ -1,16 +1,15 @@
 #pragma once
-#include <Eigen/Dense>
+//#include <Eigen/Dense>
 
 #include <data.h>
-//#include <mlib/utils/string_helpers.h>
-//#include <mlib/utils/matlab_helpers.h>
+
 #include "utils/random_vectors.h"
 
 
 namespace cvl{
 
 
-
+/*
 double angle(Vector3d a, Vector3d b){
     a.normalize();
     b.normalize();
@@ -21,6 +20,7 @@ double angle(Vector2d a, Vector2d b){
     b.normalize();
     return std::acos(a.dot(b));
 }
+*/
 
 
 /**
@@ -35,13 +35,8 @@ double angle(Vector2d a, Vector2d b){
 class Generator{
 public:
 
-    Generator(){
+    Generator(){}
 
-    }
-
-    bool degenerate_configuration(double threshold){
-
-    }
 
     template<class T>
     Data<T> next(){
@@ -56,20 +51,14 @@ public:
 
 
         // good generator, pick a uniform position between -1,1 and multiply by a distance...
-
         for(int i=0;i<3;++i){
-            //Vector2d y((double)((float)randn(0,1)),(double)((float)randn(0,1)));
             Vector2<T> y(mlib::randu<long double>(-1,1),mlib::randu<long double>(-1,1));
-          // y*=0.1;
-            T z=mlib::randu<long double>(0.1,100);// 0.1 to 10 is good
-            //T z=mlib::randu<long double>(0.9,1.1);// 0.1 to 1000 is good too
+            T z=mlib::randu<long double>(0.1,100);
 
             Vector3<T> xri=z*y.homogeneous();
             Vector3<T> x=(P.inverse()*xri);
             x0[i]=x;
             xr[i]=xri;
-
-           // y+=Vector2<T>(mlib::randn<long double>(0.0,0.01),mlib::randn<long double>(0,0.01));
             ys[i]=y;
         }
 

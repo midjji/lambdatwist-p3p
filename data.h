@@ -108,7 +108,7 @@ public:
         for(int j=0;j<3;++j)             if((R*x0[j] +t)[2]<0) return false;
 
 
-
+        // no infs either...
         if(!(R.isnormal() && t.isnormal())) return false;
 
         if(full){
@@ -124,7 +124,7 @@ public:
         }
 
         Vector4d q=getRotationQuaternion(R);
-        if(std::abs(q.length()-1)>1e-4) return false;
+        if(std::abs(q.length()-1)>1e-8) return false;
 
 
         return true;

@@ -44,14 +44,8 @@ int p3p_lambdatwist( Vector3<T> y1,
 
 
 
-    // normalize the length of ys
+    // normalize the length of ys, we could expect it, but lets not...
     TIC(lt1);
-
-    //Vector3<T> y1=ys_in[0];
-    //Vector3<T> y2=ys_in[1];
-    //VecWith a mean decrease from $490ns$ to $260ns$ for repeated calls the system performs very nearly twice as fast. The variance and maximums are also lower which is important in real time systems.tor3<T> y3=ys_in[2];
-    // takes about 8ns
-
     y1.normalize();
     y2.normalize();
     y3.normalize();
@@ -78,8 +72,6 @@ int p3p_lambdatwist( Vector3<T> y1,
 
     //if(abs(D1.determinant())<1e-5 || fabs(D2.determinant())<1e-5)        cout<<"det(D): "<<D1.determinant()<<" "<<D2.determinant()<<endl;
     TOC(lt1);
-
-
     TIC(lt2);
 
 
@@ -108,7 +100,7 @@ int p3p_lambdatwist( Vector3<T> y1,
     TIC(lt3);
     T g=0;
 
-    //p3 is essentially det(D2) so its definietly >0 or its degen
+    //p3 is det(D2) so its definietly >0 or its a degenerate case
 
     {
         p3=1.0/p3;
@@ -116,16 +108,12 @@ int p3p_lambdatwist( Vector3<T> y1,
         p1*=p3;
         p0*=p3;
 
-
-        //cout<<"p=["<<p2<<" "<< p2<<" "<< p1<<"]"<<endl;
-
-
         // get sharpest real root of above...
 
         g=cubick(p2,p1,p0);
     }
 
-    //  cout<<"g: "<<g<<endl;
+
 
 
     TOC(lt3);
@@ -159,14 +147,10 @@ int p3p_lambdatwist( Vector3<T> y1,
     // get sorted eigenvalues and eigenvectors given that one should be zero...
     Matrix<T,3,3> V;
     Vector3<T> L;
-
-
-
     eigwithknown0(A,V,L);
 
     T v=std::sqrt(std::max(T(0),-L(1)/L(0)));
-    //cout<<"V "<<V<<endl;
-    //cout<<"L "<<L<<endl;
+
 
     TOC(lt4);
     TIC(lt5);
@@ -193,7 +177,7 @@ int p3p_lambdatwist( Vector3<T> y1,
         T a=T(1.0)/((a13 - a12)*w1*w1 - a12*b13*w1 - a12);
         T b=(a13*b12*w1 - a12*b13*w0 - T(2.0)*w0*w1*(a12 - a13))*a;
         T c=((a13 - a12)*w0*w0 + a13*b12*w0 + a13)*a;
-        //cout<<"p="<<Vector3<T>(1,b,c)<<endl;
+
 
 
         if(b*b -4.0*c>=0 ){
@@ -202,7 +186,7 @@ int p3p_lambdatwist( Vector3<T> y1,
             if(tau1>0){
                 T tau=tau1;
                 T d=a23/(tau*(b23 + tau) + T(1.0));
-                //if(d>=0 ||true){
+
                 T l2=std::sqrt(d);
                 T l3=tau*l2;
 
@@ -213,12 +197,12 @@ int p3p_lambdatwist( Vector3<T> y1,
 
                     ++valid;
                 }
-                //}
+
             }
             if(tau2>0){
                 T tau=tau2;
                 T d=a23/(tau*(b23 + tau) + T(1.0));
-                //if(d>=0||true){
+
                 T l2=std::sqrt(d);
                 T l3=tau*l2;
                 T l1=w0*l2 +w1*l3;
@@ -226,7 +210,7 @@ int p3p_lambdatwist( Vector3<T> y1,
                     Ls[valid]={l1,l2,l3};
                     ++valid;
                 }
-                //}
+
             }
         }
     }
@@ -249,7 +233,7 @@ int p3p_lambdatwist( Vector3<T> y1,
             if(tau1>0) {
                 T tau=tau1;
                 T d=a23/(tau*(b23 + tau) + T(1.0));
-                //if(d>=0||true){
+
                 T l2=std::sqrt(d);
 
                 T l3=tau*l2;
@@ -259,12 +243,12 @@ int p3p_lambdatwist( Vector3<T> y1,
                     Ls[valid]={l1,l2,l3};
                     ++valid;
                 }
-                //}
+
             }
             if(tau2>0){
                 T tau=tau2;
                 T d=a23/(tau*(b23 + tau) + T(1.0));
-                //if(d>=0||true){ // never happens!
+
                 T l2=std::sqrt(d);
 
                 T l3=tau*l2;
@@ -274,7 +258,7 @@ int p3p_lambdatwist( Vector3<T> y1,
                     Ls[valid]={l1,l2,l3};
                     ++valid;
                 }
-                //}
+
             }
         }
     }
@@ -282,7 +266,7 @@ int p3p_lambdatwist( Vector3<T> y1,
 
     TOC(lt5);
     TIC(lt6);
-    //if constexpr (refinement_iterations>0)
+
     for(int i=0;i<valid;++i){              gauss_newton_refineL<T,refinement_iterations>(Ls[i],a12,a13,a23,b12,b13,b23);        }
     TOC(lt6);
 
@@ -314,10 +298,8 @@ int p3p_lambdatwist( Vector3<T> y1,
 
 
         Rs[i]=Y*X;
-        Ts[i]=(ry1 - Rs[i]*x1 );
-        //if(!std::isnan(Ts[solutions][0] + Ts[solutions][1] + Ts[solutions][2]))            solutions++;
 
-        //Ts[i]=(ry1 - Rs[i]*x1 + ry2 - Rs[i]*x2 +ry3 - Rs[i]*x3)/3.0;
+        Ts[i]=(ry1 - Rs[i]*x1 );
 
     }
 
