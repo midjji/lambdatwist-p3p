@@ -4,6 +4,7 @@
 
 
 #include "lambdatwist/lambdatwist.p3p.h"
+#include "lambdatwist/mk2.h"
 #include "kneip/kneip.h"
 #include "utils/mlibtime.h"
 #include <ke/ke.h>
@@ -113,17 +114,18 @@ public:
     std::string get_name(){return "Lambda";}
 };
 
+template<class T>class LambdaMK2Solver{
+public:
+    int solve(Data<T>& data, cvl::Vector<Matrix<T,3,3>,4>& Rs,
+              cvl::Vector<Vector<T,3>,4>& Ts){
 
+        Vector3<Vector3<T>> yss=data.xr;
+        Vector3<Vector3<T>> xss=data.x0;
+        return p3p_lambdatwist(yss[0],yss[1],yss[2],xss[0],xss[1],xss[2],Rs,Ts);
 
-
-
-
-
-
-
-
-
-
+    }
+    std::string get_name(){return "LambdaMK2";}
+};
 
 // verification of answers can be made slowly, so...
 
@@ -161,9 +163,6 @@ template<class T, class Solver> P3PResult<T> compute_accuracy(Solver S, std::vec
 }
 
 
-
-
-
 template<class T>  void test(const std::vector<Data<T>>& datas){
 
     cout<<"Beginning Test: "<<endl;
@@ -171,13 +170,15 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
 
 
     P3PResult<T> lambda = compute_accuracy<T,LambdaSolver<T>>(LambdaSolver<T>(),datas,error_limit);
+    P3PResult<T> lambda2 = compute_accuracy<T,LambdaMK2Solver<T>>(LambdaMK2Solver<T>(),datas,error_limit);
     P3PResult<T> ke = compute_accuracy<T,KeSolver<T>>(KeSolver<T>(),datas,error_limit);
     P3PResult<T> kneip= compute_accuracy<T,KneipSolver<T>>(KneipSolver<T>(),datas,error_limit);
 
 
 
+
     // make the result table
-    std::vector<P3PResult<T>> res={lambda,ke,kneip};
+    std::vector<P3PResult<T>> res={lambda,lambda2,ke,kneip};
     std::vector<std::string> headers;
     std::vector<std::string> columns;
     std::vector<std::vector<std::string>> rows;
@@ -241,7 +242,7 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
         std::vector<int> solutions;
         for(auto r:res) solutions.push_back(r.incorrect_valid);
         rows.push_back(toStrVec(solutions));
-        columns.push_back("incorrect solutuons output by the solver");
+        columns.push_back("incorrect solutions output by the solver");
     }
 
 
@@ -382,7 +383,7 @@ template<class T> void test_type(){
     cout<<"generating";cout.flush();
     Generator gennie;
 
-    int N=std::pow(10,7);
+    int N=std::pow(10,6);
 
     std::vector<Data<T>> datas;datas.reserve(N);
     for(int i=0;i<N;++i){
@@ -418,6 +419,8 @@ template<class T> void profile_lambda(){
     cout<<sols<<endl;
 }
 
+
+void test_special_cases
 
 
 

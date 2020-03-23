@@ -78,6 +78,28 @@ public:
     }
 
 
+    // there are a number of special cases
+    // note that many are symmetric, but all should be included because the solvers might not be.
+    std::vector<Data<T>> special_cases(){
+        // these are the hard special cases, ie exact
+
+        // special case 1:3 are
+        // y_i'*y_j = 0 for 12, 13, 23
+        // special case 4:6 are
+        // |x_i - x_j| = 0
+        // special case
+        //
+
+
+
+
+
+
+
+    }
+
+
+
 
 };
 
