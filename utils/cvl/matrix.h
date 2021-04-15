@@ -71,6 +71,7 @@ class Matrix
 protected:
 
 public:
+    Matrix()=default;
     /// the statically allocated data of the matrix.
     T _data[good_mat_size<T,Rows*Cols>()];
 
@@ -284,15 +285,6 @@ public:
     ///@return the number of rows
     __mlib_host_device
     unsigned int rows() const{return Rows;}
-
-    /// Default constructor
-    __mlib_host_device
-    Matrix(){
-        static_assert(Cols*Rows>0,"empty matrix?");
-    }
-    /// Default destructor
-    __mlib_host_device ~Matrix(){}
-
 
     explicit Matrix(T all){
         for (unsigned int i = 0; i < Rows * Cols; ++i) {
