@@ -127,8 +127,10 @@ public:
 
 // verification of answers can be made slowly, so...
 
-template<class T, class Solver> P3PResult<T> compute_accuracy(Solver S, std::vector<Data<T>> datas, T error_limit=1e-6){
-    P3PResult<T> res(S.get_name());res.errors.reserve(datas.size());
+template<class T, class Solver> P3PResult compute_accuracy(Solver S,
+                                                           std::vector<Data<T>> datas,
+                                                           T error_limit=1e-6){
+    P3PResult res(S.get_name(),datas.size());
 
     for(Data<T>& data:datas){
         cvl::Vector<Matrix<T,3,3>,4> Rs;
@@ -170,38 +172,38 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
     T error_limit=1e-6;
 
 
-    P3PResult<T> lambda = compute_accuracy<T,LambdaSolver<T>>(LambdaSolver<T>(),datas,error_limit);
-    P3PResult<T> ke = compute_accuracy<T,KeSolver<T>>(KeSolver<T>(),datas,error_limit);
-    P3PResult<T> kneip= compute_accuracy<T,KneipSolver<T>>(KneipSolver<T>(),datas,error_limit);
+    P3PResult lambda = compute_accuracy<T,LambdaSolver<T>>(LambdaSolver<T>(),datas,error_limit);
+    P3PResult ke = compute_accuracy<T,KeSolver<T>>(KeSolver<T>(),datas,error_limit);
+    P3PResult kneip= compute_accuracy<T,KneipSolver<T>>(KneipSolver<T>(),datas,error_limit);
 
 
 
     // make the result table
-    std::vector<P3PResult<T>> res={lambda,ke,kneip};
+    std::vector<P3PResult> res={lambda,ke,kneip};
     std::vector<std::string> headers;
     std::vector<std::string> columns;
     std::vector<std::vector<std::string>> rows;
 
 
-    for(auto r:res) headers.push_back(r.name);
+    for(auto& r:res) headers.push_back(r.name);
 
     {
         // number of times ground truth was found
         std::vector<int> gt;
-        for(auto r:res) gt.push_back(r.ground_truth_in_set);
+        for(auto& r:res) gt.push_back(r.ground_truth_in_set);
         rows.push_back(toStrVec(gt));
         columns.push_back("ground truth found");
     }
     {
         // number of times a valid solution was found
         std::vector<int> gt;
-        for(auto r:res) gt.push_back(datas.size() - r.no_solution);
+        for(auto& r:res) gt.push_back(datas.size() - r.no_solution);
         rows.push_back(toStrVec(gt));
         columns.push_back("any solution found");
     }
     {
         // ratio for ground truth found
-        std::vector<double> gtratio;for(auto r:res) gtratio.push_back((double)r.ground_truth_in_set/datas.size());
+        std::vector<double> gtratio;for(auto& r:res) gtratio.push_back((double)r.ground_truth_in_set/datas.size());
         rows.push_back(toStrVec(gtratio));
         columns.push_back("ground truth found ratio");
     }
@@ -209,21 +211,21 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
     {
         // number of no solution at all found
         std::vector<int> nosol;
-        for(auto r:res) nosol.push_back(r.no_solution);
+        for(auto& r:res) nosol.push_back(r.no_solution);
         rows.push_back(toStrVec(nosol));
         columns.push_back("no solution found");
     }
     {
         // number of valid solutions according to solver
         std::vector<int> solutions;
-        for(auto r:res) solutions.push_back(r.valid);
+        for(auto& r:res) solutions.push_back(r.valid);
         rows.push_back(toStrVec(solutions));
         columns.push_back("valid according to solver");
     }
     {
         // duplicates
         std::vector<int> duplicates;
-        for(auto r:res) duplicates.push_back(r.duplicates);
+        for(auto& r:res) duplicates.push_back(r.duplicates);
         rows.push_back(toStrVec(duplicates));
         columns.push_back("duplicates");
         //
@@ -231,7 +233,7 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
     {
         // unique correct
         std::vector<int> usols;
-        for(auto r:res) usols.push_back(r.solutions);
+        for(auto& r:res) usols.push_back(r.solutions);
         rows.push_back(toStrVec(usols));
         columns.push_back("unique correct solutions");
         //
@@ -239,7 +241,7 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
     {
         // incorrect valid solutions
         std::vector<int> solutions;
-        for(auto r:res) solutions.push_back(r.incorrect_valid);
+        for(auto& r:res) solutions.push_back(r.incorrect_valid);
         rows.push_back(toStrVec(solutions));
         columns.push_back("incorrect solutuons output by the solver");
     }
@@ -247,8 +249,8 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
 
     cout<<displayTable(headers,rows,columns,"Table: ")<<endl;
     {
-        std::vector<std::vector<T>> errors;
-        for(auto r:res) errors.push_back(r.errors);
+        std::vector<std::vector<float128>> errors;
+        for(P3PResult r:res) errors.push_back(r.errors);
         std::string str=display(errors,headers);
     }
 
@@ -262,7 +264,9 @@ template<class T>  void test(const std::vector<Data<T>>& datas){
 
 
 
-template<class T> void versus(const std::vector<Data<T>>& datas, int repeat_versus=5, bool inner_timers=false){
+template<class T> void versus(const std::vector<Data<T>>& datas,
+                              int repeat_versus=5,
+                              bool inner_timers=false){
 
     cout<<"Beginning Versus"<<endl;
 
@@ -289,7 +293,7 @@ template<class T> void versus(const std::vector<Data<T>>& datas, int repeat_vers
         if(dokneip){
 
             tot_kneip.tic();
-            for(int i=0;i<datas.size();++i){
+            for(uint i=0;i<datas.size();++i){
                 //if(inner_timers){if(i==100){                kneip.clear();            }kneip.tic();}
 
                 cvl::Vector<Matrix<T,3,3>,4> Rs;
@@ -306,7 +310,7 @@ template<class T> void versus(const std::vector<Data<T>>& datas, int repeat_vers
         {
             tot_kes.tic();
 
-            for(int i=0;i<datas.size();++i){
+            for(uint i=0;i<datas.size();++i){
                 //    if(inner_timers)if(i==100){            kes.clear();        }        kes.tic();
                 cvl::Vector<Matrix<T,3,3>,4> Rs;
                 cvl::Vector<Vector<T,3>,4> Ts;
@@ -318,7 +322,7 @@ template<class T> void versus(const std::vector<Data<T>>& datas, int repeat_vers
         }
         {
             tot_lambda.tic();
-            for(int i=0;i<datas.size();++i){
+            for(uint i=0;i<datas.size();++i){
                 //    if(inner_timers) {if(i==100){                lt.clear();            }            lt.tic();}
                 cvl::Vector<Matrix<T,3,3>,4> Rs;
                 cvl::Vector<Vector<T,3>,4> Ts;
@@ -380,16 +384,24 @@ template<class T> void versus(const std::vector<Data<T>>& datas, int repeat_vers
 template<class T> void test_type(){
     // generate data
     cout<<"generating";cout.flush();
+    mlib::Timer timer("generator");
+
     Generator gennie;
 
     int N=std::pow(10,7);
 
     std::vector<Data<T>> datas;datas.reserve(N);
+    timer.tic();
     for(int i=0;i<N;++i){
+
         datas.push_back(gennie.next<T>());
+
         //if((i%1000)==999)        cout<<"i: "<<i<<endl;
     }
-    cout<<" done "<<datas.size()<<endl;
+    timer.toc();
+
+
+    cout<<timer<<" done "<<datas.size()<<endl;
 
     test(datas);
     // printtimers();
@@ -399,6 +411,35 @@ template<class T> void test_type(){
     //testReal();
 }
 
+void test_special(){
+    // generate data
+    cout<<"generating";cout.flush();
+    mlib::Timer timer("generator");
+
+    Generator gennie;
+
+    int N=std::pow(10,4);
+
+    std::vector<Data<double>> datas;datas.reserve(N);
+    timer.tic();
+    for(int i=0;i<N;++i){
+
+        datas.push_back(gennie.special_case0<double>());
+
+        //if((i%1000)==999)        cout<<"i: "<<i<<endl;
+    }
+    timer.toc();
+
+
+    cout<<timer<<" done "<<datas.size()<<endl;
+
+    test(datas);
+    // printtimers();
+
+    versus(datas);
+
+    //testReal();
+}
 
 template<class T> void profile_lambda(){
 
@@ -425,6 +466,8 @@ void testAll(){
 
 
     test_type<double>();
+    //test_special();
+    //profile_lambda<double>();
 
 
 }

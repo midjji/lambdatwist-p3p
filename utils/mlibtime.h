@@ -55,6 +55,7 @@
 #include <vector>
 #include <iostream>
 
+using float128=long double;// sizeof(long double)==16
 
 namespace mlib{
 
@@ -63,23 +64,6 @@ namespace mlib{
 /// different ways of counting time seconds, milliseconds, microseconds, nanoseconds
 enum TIME_TYPE{TIME_S,TIME_MS,TIME_US,TIME_NS};
 
-/**
- * @brief getIsoTime
- * @return the current time as in iso format 24:60:60
- */
-std::string getIsoTime();
-/**
- * @brief getIsoDate
- * @return the current date according to the os in iso format 2016-10-01
- */
-std::string getIsoDate();
-/**
- * @brief getIsoDateTime
- * @return isodate:isotime
- *
- * This gets ridiculously complicated very quickly, so just assume its the time for the local computer
- */
-std::string getIsoDateTime();
 
 /**
  * @brief The Time class

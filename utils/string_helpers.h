@@ -72,7 +72,7 @@ template<class T> std::vector<std::vector<std::string>> toStrMat(std::vector<std
         strrows.push_back(toStrVec(e));
     // verify all rows have the same length by adding empty
     uint values=0;
-    for(std::vector<std::string> row:strrows)
+    for(const std::vector<std::string>& row:strrows)
         values=std::max(values,(uint)row.size());
 
     for(uint i=0;i<strrows.size();++i)

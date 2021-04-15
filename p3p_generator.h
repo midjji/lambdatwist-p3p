@@ -3,7 +3,7 @@
 
 #include <data.h>
 
-#include "utils/random_vectors.h"
+#include "utils/random.h"
 
 
 namespace cvl{
@@ -35,14 +35,11 @@ double angle(Vector2d a, Vector2d b){
 class Generator{
 public:
 
-    Generator(){}
-
-
     template<class T>
     Data<T> next(){
 
-        cvl::Matrix<T,3,3> R=mlib::getRandomRotation<double>();
-        cvl::Vector3<T> t(mlib::randn<long double>(0,1),mlib::randn<long double>(0,1),mlib::randn<long double>(0,1));
+        cvl::Matrix<T,3,3> R=cvl::random_rotation_matrix();
+        cvl::Vector3<T> t(mlib::randn(0,1),mlib::randn(0,1),mlib::randn(0,1));
         t.normalize();
         Pose<T> P(R,t);
         Vector3<Vector3<T>>  x0,xr;
@@ -52,8 +49,8 @@ public:
 
         // good generator, pick a uniform position between -1,1 and multiply by a distance...
         for(int i=0;i<3;++i){
-            Vector2<T> y(mlib::randu<long double>(-1,1),mlib::randu<long double>(-1,1));
-            T z=mlib::randu<long double>(0.1,100);
+            Vector2<T> y(mlib::randu(-1,1),mlib::randu(-1,1));
+            T z=mlib::randu(0.1,100);
 
             Vector3<T> xri=z*y.homogeneous();
             Vector3<T> x=(P.inverse()*xri);
@@ -77,7 +74,51 @@ public:
         return Data<T>(P,x0,xr);
     }
 
+    bool first_special_case0=true;
+    template<class T> Data<T> special_case0(){
+        // 3d point differences are orthogonal
+        // there is a faster lambdatwist special case solver for this, but it works outright
+        Vector3d x0(0,0,0);
+        Vector3d x1(1,0,0);
+        Vector3d x2(0,1,0);
+        if(!first_special_case0){
+            PoseD P(random_rotation_matrix());
+            x0=P*x0;
+            x1=P*x1;
+            x2=P*x2;
+        }
+        first_special_case0=false;
 
+        Vector3d x0c,x1c,x2c;
+        PoseD Pcam;
+        //int tries=0;
+        while(true){
+          //  tries++;
+
+            Pcam=random_pose();
+            x0c=Pcam*x0;
+            x1c=Pcam*x1;
+            x2c=Pcam*x2;
+            if(x0c[2]<1e-3 || x1c[2]<1e-3|| x2c[2]<1e-3) continue;
+            Vector2d y0=x0c.dehom();
+            Vector2d y1=x1c.dehom();
+            Vector2d y2=x2c.dehom();
+            if(!y0.is_in(Vector2d(-1,-1),Vector2d(1,1))) continue;
+            if(!y1.is_in(Vector2d(-1,-1),Vector2d(1,1))) continue;
+            if(!y2.is_in(Vector2d(-1,-1),Vector2d(1,1))) continue;
+            break;
+        }
+        //std::cout<<"tries: "<<tries<<std::endl;// takes about 100x each
+
+        return Data<T>(Pcam, Vector3<Vector3<T>>(x0,x1,x2),Vector3<Vector3<T>>(x0c,x1c,x2c));
+    }
+    bool first_special_case1=true;
+    template<class T> Data<T>
+    special_case1(){
+        // 2d points are orthogonal
+return Data<T>();
+        //turn Data<T>(Pcam, Vector3<Vector3<T>>(x0,x1,x2),Vector3<Vector3<T>>(x0c,x1c,x2c));
+    }
 
 };
 

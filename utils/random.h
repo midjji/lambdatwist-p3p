@@ -1,5 +1,4 @@
 #pragma once
-
 /* ********************************* FILE ************************************/
 /** \file    random.h
  *
@@ -36,14 +35,6 @@
  * \note MIT licence
  *
  ******************************************************************************/
-
-#ifndef RANDOM_SEED_VALUE
-#define RANDOM_SEED_VALUE 0
-#endif
-
-
-
-
 //////////////////// SELF CONTAINED ////////////////////////////
 
 
@@ -54,77 +45,42 @@
 #include <set>
 #include <mutex>
 #include <algorithm>
-
+#include <assert.h>
+#include <utils/cvl/pose.h>
 namespace mlib{
 
-
-
-
 namespace random{
+// this is not thread safe, and it cant meaningfully be so either.
+// no not even if you make one per thread
+// no threaded program is repeatable, ever, regardless
+// even in the single threaded case,
+// you cannot use the generator in a static init, due to init order fiasco...
 
-/// the random generator mutex,
-static std::mutex gen_mtx;
-/// shall leak
-static std::default_random_engine generator;
-static bool seeded=false;
-
-
-template<int V>  void init_common_generator(){
-    if(seeded) return; // dont lock unless you need to
-    std::unique_lock<std::mutex> ul(gen_mtx); // lock
-    if(seeded) return; // what if someone fixed it in the mean time?
-    seeded=true;
-    generator=std::default_random_engine();
-
+static const std::uint64_t seed{
 #ifdef RANDOM_SEED_FROM_TIME
-    unsigned long int seed=static_cast<unsigned long>(
-                std::chrono::duration_cast<std::chrono::milliseconds>(
-                    std::chrono::system_clock::now().time_since_epoch()).count());
-    generator.seed(seed);
+    std::chrono::system_clock::now().time_since_epoch().count()
 #else
-    generator.seed(RANDOM_SEED_VALUE);
+#ifndef RANDOM_SEED_VALUE
+#define RANDOM_SEED_VALUE 0
 #endif
-
-    /// I have avoided using local static since that does not work for old compilers or sometimes new ones...
-}
-
-
+RANDOM_SEED_VALUE
+#endif
+};
+// recommended for scientific use,
+// slower in some benchmarks, but faster in practice,
+// especially for clang10 compared to the standard one (almost a factor of 10x faster)
+static std::mt19937_64 generator(seed);
 } // end namespace random
 
-/**
- * @brief randu integer random value drawn from uniform distribution
- * @param low  - included
- * @param high - included
- * @return random value according to compile time random value strategy
- */
-template<class T> T randu(T low=0, T high=1){
-    static_assert(std::is_floating_point<T>::value,          "template argument not a floating point type");
-    random::init_common_generator<0>();
-    std::uniform_real_distribution<T> rn(low,high);
-    return rn(random::generator);
-}
-/**
- * @brief randui integer random value drawn from uniform distribution
- * @param low  - included
- * @param high - included
- * @return random value according to compile time random value strategy
- */
-template<class T> T randui(T low=0, T high=1){
-    random::init_common_generator<0>();
-    std::uniform_int_distribution<T> rn(low,high);
-    return rn(random::generator);
-}
-/**
- * @brief randn random value drawn from normal distribution
- * @param m
- * @param sigma
- * @return random value drawn from normal distribution
- */
-template<class T> T randn(T mean=0, T sigma=1){
-    static_assert(std::is_floating_point<T>::value,          "template argument not a floating point type");
-    random::init_common_generator<0>();
-    std::normal_distribution<T> rn(mean, sigma);
-    return rn(random::generator);
-}
+double randu(double low=0, double high=1);
+int randui(int low=0, int high=1);
+double randn(double mean=0, double sigma=1);
+
 
 } // end namespace mlib
+namespace cvl {
+
+
+PoseD random_pose();
+Matrix3d random_rotation_matrix();
+}

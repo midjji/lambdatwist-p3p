@@ -1,5 +1,5 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-PROJECT(lambdatwist CXX) # defines ${CMAKE_PROJECT_NAME}(top level) PROJECT_NAME(most recent)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
+PROJECT(improved_lambda CXX) # defines ${CMAKE_PROJECT_NAME}(top level) PROJECT_NAME(most recent)
 
 macro(print_list name list)
 message("\n Listing: ${name}\n")
@@ -11,8 +11,11 @@ endmacro()
 
 
 
-message("To exactly replicate the results from the paper, you must use ubuntu 14.04 and its default compiler")
-
+message("To exactly replicate the results from the paper,
+    you must use ubuntu 14.04 and its default compiler")
+message("you must also use bfdaab092e0173a260f345c8462dd0e23f606910")
+message("improvements since then do not change the rankings")
+message("Unless you are comparing to the paper, you should not use this verision, but the github/midjji/pnp version which is user friendly and does p3p,p4p,pnp as you would want")
 
 
 
@@ -31,12 +34,8 @@ else()
     endif()
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "-fno-rtti -fno-omit-frame-pointer -pg  -rdynamic ") # dynamic is for the improved asserts
-set(CMAKE_CXX_FLAGS_RELEASE "-fno-rtti  -O3 -march=native -mtune=native -DNDEBUG")
-
-
-
-
+#set(CMAKE_CXX_FLAGS_DEBUG "-fno-omit-frame-pointer -pg  -rdynamic ") # dynamic is for the improved asserts
+set(CMAKE_CXX_FLAGS_RELEASE " -O3 -march=native -mtune=native -DNDEBUG")
 
 option(RANDOM_SEED_FROM_TIME "generate a seed from time, default" OFF)
 if(RANDOM_SEED_FROM_TIME)
@@ -46,9 +45,6 @@ else()
 endif()
 
 
-
-
-add_definitions("-std=c++11")
 include_directories(".")
 include_directories("utils")
 
@@ -84,6 +80,7 @@ list(APPEND util-srcs utils/mlibtime.cpp)
 list(APPEND util-srcs utils/mlibtime.h )
 list(APPEND util-srcs  utils/matlab_helpers.h)
 list(APPEND util-srcs utils/random.h)
+list(APPEND util-srcs utils/random.cpp)
 list(APPEND util-srcs  utils/random_vectors.h)
 
 list(APPEND util-srcs  utils/string_helpers.h)
@@ -105,7 +102,7 @@ list(APPEND util-srcs p3p_generator.h)
 
 # headers are included for ide benefit...
 add_executable(main main.cpp ${util-srcs} ${ke-srcs} ${kneip-srcs} ${lambdatwist-srcs})
-
+target_compile_features(main PUBLIC cxx_std_17)
 message("================================================================================")
 message("The p3p solvers are under their respective folders,")
 message("Timing varies between compilers and processors, rankings are typically consistent however" )

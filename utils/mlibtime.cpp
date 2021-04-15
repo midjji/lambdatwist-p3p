@@ -19,57 +19,6 @@ void sleep(double seconds){std::this_thread::sleep_for(std::chrono::milliseconds
 void sleep_ms(double milliseconds){std::this_thread::sleep_for(std::chrono::milliseconds((int)milliseconds));}
 void sleep_us(double microseconds){std::this_thread::sleep_for(std::chrono::microseconds((int)microseconds));}
 
-std::string getIsoDate(){
-    std::string datetime=getIsoDateTime();
-    return datetime.substr(0,10);
-}
-std::string getIsoTime(){
-    std::string datetime=getIsoDateTime();
-    return datetime.substr(11,8);
-}
-
-std::string getIsoDateTime()
-{
-
-    std::stringstream now;
-
-    auto tp = std::chrono::system_clock::now();
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>( tp.time_since_epoch() );
-    size_t modulo = ms.count() % 1000;
-
-    time_t seconds = std::chrono::duration_cast<std::chrono::seconds>( ms ).count();
-
-#ifdef _MSC_VER
-
-    struct tm T;
-    localtime_s(&T, &seconds);
-   // now << std::put_time(&T, "%Y-%m-%d %H-%M-%S.");
-
-#else
-
-#define HAS_STD_PUT_TIME 1
-#if HAS_STD_PUT_TIME
-//    now << std::put_time( localtime( &seconds ), "%Y-%m-%d %H-%M-%S." );
-#else
-//# warning "deprecated fallback for std::put_time!"
-    char buffer[25]; // holds "2013-12-01 21:31:42"
-
-    // note: localtime() is not threadsafe, lock with a mutex if necessary
-    if( strftime( buffer, 25, "%Y-%m-%d %H-%M-%S.", localtime( &seconds ) ) ) {
-        now << buffer;
-    }
-
-#endif // HAS_STD_PUT_TIME
-
-#endif //_MSC_VER
-
-    // ms
-    now.fill( '0' );
-    now.width( 3 );
-    now << modulo;
-
-    return now.str();
-}
 
 
 
