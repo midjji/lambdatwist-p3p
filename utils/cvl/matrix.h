@@ -42,14 +42,20 @@
  */
 namespace cvl {
 
-///meta template clarifiers
-
-template<int a>  __mlib_host_device constexpr bool isodd() {return a % 2 ==1;}
-template<unsigned int a,unsigned int b>  __mlib_host_device constexpr unsigned int maxv() {
+template<int a>  constexpr bool isodd() {return a % 2 ==1;}
+template<unsigned int a,unsigned int b> constexpr unsigned int maxv() {
     return a < b ? b : a;
 }
 
+// slightly improves alignment for common cases!
+template<class T, int a> int constexpr good_mat_size(){return a;}
+template<> constexpr int good_mat_size<float,3>(){return 4;}
+template<> constexpr int good_mat_size<double,3>(){return 4;}
+template<> constexpr int good_mat_size<float,9>(){return 16;}
+template<> constexpr int good_mat_size<double,9>(){return 16;}
+// you can stride the matrix class implicitly, but lots of work
 
+// in c++ c17 and onwards, using align works as expected. except not really...
 template<class T, unsigned int Rows, unsigned int Cols>
 /**
  * @brief The Matrix class<T,Rows,Cols>
@@ -59,11 +65,6 @@ template<class T, unsigned int Rows, unsigned int Cols>
  *
  * cuda enabled
  * typdefs Vector<T,Rows>,Vector<Rows>
- * alignas(32)
- *
- * Vector3 should be 4*sizeof(T)
- * Vector2 and 4 are ok 5,6,7 should be 8
- * alignas(64) can inprove speed but causes unexpected behaviour with arrays/pointers since sizeof does not capture align
  */
 class Matrix
 {
@@ -71,8 +72,7 @@ protected:
 
 public:
     /// the statically allocated data of the matrix.
-    T _data[Rows * Cols];
-    //T _data[maxv<4,Rows * Cols>()];
+    T _data[good_mat_size<T,Rows*Cols>()];
 
     ///@return Access element (i) with a static limit check. Useful for vectors and row-major iteration over matrices. () syntax is not pretty operator() < T >()
     template<unsigned int i> __mlib_host_device
