@@ -28,8 +28,6 @@ namespace cvl{
 
 
 
-
-
 template<class T, int refinement_iterations=5>
 int p3p_lambdatwist( Vector3<T> y1,
                      Vector3<T> y2,
@@ -101,7 +99,8 @@ int p3p_lambdatwist( Vector3<T> y1,
     T g=0;
 
     //p3 is det(D2) so its definietly >0 or its a degenerate case
-
+    /* the root with the highest gradient magnitude should be selected,
+     * thats built into the cubick initialization.*/
     {
         p3=1.0/p3;
         p2*=p3;
@@ -149,6 +148,7 @@ int p3p_lambdatwist( Vector3<T> y1,
     Vector3<T> L;
     eigwithknown0(A,V,L);
 
+
     T v=std::sqrt(std::max(T(0),-L(1)/L(0)));
 
 
@@ -161,107 +161,76 @@ int p3p_lambdatwist( Vector3<T> y1,
     
 
     // use the t=Vl with t2,st2,t3 and solve for t3 in t2
-    { //+v
 
-        T s=v;
-        //T w2=T(1.0)/( s*V(0,1) - V(0,0));
-        //T w0=(V(1,0) - s*V(1,1))*w2;
-        //T w1=(V(2,0) - s*V(2,1))*w2;
+    Vector2<T> ss(v,-v);
+    for(T s:ss)
+    {
 
-        T w2=T(1.0)/( s*V(1) - V(0));
-        T w0=(V(3) - s*V(4))*w2;
-        T w1=(V(6) - s*V(7))*w2;
+        // u = V(:, 1) - sV(:,2)
 
+        T u1=V(0) - s*V(1);
+        T u2=V(3) - s*V(4);
+        T u3=V(6) - s*V(7);
 
+        // we are computing lambda using a linear relation
+        // u1*l1 + u2*l2 + u3*l3=0
+        // li>0, implies all three ui=0 is degenerate...
+        // if two are zero the third must be
+        // hence at most one can be zero.
+        // divide by the largest for best numerics,
+        // simple version, use the bigger of u1, u2, one will always be non-zero
+        if(std::abs(u1)<std::abs(u2))
+        {
+            // solve for l2
+            T a= (a23 - a12)*u3*u3 - a12*u2*u2 + a12*b23*u2*u3;
+            T b= (T(2)*a23*u1*u3 - T(2)*a12*u1*u3 + a12*b23*u1*u2 - a23*b12*u2*u3)/a;
+            T c= (a23*u1*u1 - a12*u1*u1 + a23*u2*u2 - a23*b12*u1*u2)/a;
 
-        T a=T(1.0)/((a13 - a12)*w1*w1 - a12*b13*w1 - a12);
-        T b=(a13*b12*w1 - a12*b13*w0 - T(2.0)*w0*w1*(a12 - a13))*a;
-        T c=((a13 - a12)*w0*w0 + a13*b12*w0 + a13)*a;
-
-
-
-        if(b*b -4.0*c>=0 ){
-            T tau1,tau2;
-            root2real(b,c,tau1,tau2);
-            if(tau1>0){
-                T tau=tau1;
-                T d=a23/(tau*(b23 + tau) + T(1.0));
-
-                T l2=std::sqrt(d);
-                T l3=tau*l2;
-
-                T l1=w0*l2 +w1*l3;
-                if(l1>=0){
-
-                    Ls[valid]={l1,l2,l3};
-
-                    ++valid;
-                }
-
+            Vector2<T> taus;
+            if(!root2real(b,c,taus[0],taus[1])) continue;
+            for(T tau:taus)
+            {
+                if(tau<=0) continue;
+                //(tau^2 + b13*tau + 1)*l1^2 = a13
+                //positive only
+                T l1=std::sqrt(a13/(tau*(tau + b13) + T(1.0)));
+                T l3=tau*l1;
+                T l2=-(u1*l1 + u3*l3)/u2;
+                if(l2<=0) continue;
+                Ls[valid]={l1,l2,l3};
+                ++valid;
             }
-            if(tau2>0){
-                T tau=tau2;
-                T d=a23/(tau*(b23 + tau) + T(1.0));
+        }
+        else
+        { // solve for l1
 
+
+            T w2=T(1.0)/( -u1);
+            T w0=u2*w2;
+            T w1=u3*w2;
+
+            T a=T(1.0)/((a13 - a12)*w1*w1 - a12*b13*w1 - a12);
+            T b=(a13*b12*w1 - a12*b13*w0 - T(2.0)*w0*w1*(a12 - a13))*a;
+            T c=((a13 - a12)*w0*w0 + a13*b12*w0 + a13)*a;
+
+
+            Vector2<T> taus;
+            if(!root2real(b,c,taus[0],taus[1])) continue;
+            for(T tau:taus)
+            {
+                if(tau<=0) continue;
+                T d=a23/(tau*(b23 + tau) + T(1.0));
                 T l2=std::sqrt(d);
                 T l3=tau*l2;
                 T l1=w0*l2 +w1*l3;
-                if(l1>=0){
-                    Ls[valid]={l1,l2,l3};
-                    ++valid;
-                }
+                if(l1<=0) continue;
 
+                Ls[valid]={l1,l2,l3};
+                ++valid;
             }
         }
     }
 
-    { //+v
-        T s=-v;
-        T w2=T(1.0)/( s*V(0,1) - V(0,0));
-        T w0=(V(1,0) - s*V(1,1))*w2;
-        T w1=(V(2,0) - s*V(2,1))*w2;
-
-        T a=T(1.0)/((a13 - a12)*w1*w1 - a12*b13*w1 - a12);
-        T b=(a13*b12*w1 - a12*b13*w0 - T(2.0)*w0*w1*(a12 - a13))*a;
-        T c=((a13 - a12)*w0*w0 + a13*b12*w0 + a13)*a;
-
-
-        if(b*b -4.0*c>=0){
-            T tau1,tau2;
-
-            root2real(b,c,tau1,tau2);
-            if(tau1>0) {
-                T tau=tau1;
-                T d=a23/(tau*(b23 + tau) + T(1.0));
-                if(d>0){
-                  T l2=std::sqrt(d);
-
-                  T l3=tau*l2;
-
-                  T l1=w0*l2 +w1*l3;
-                  if(l1>=0){
-                      Ls[valid]={l1,l2,l3};
-                      ++valid;
-                  }
-                }
-            }
-            if(tau2>0){
-                T tau=tau2;
-                T d=a23/(tau*(b23 + tau) + T(1.0));
-                if(d>0){
-                  T l2=std::sqrt(d);
-
-                  T l3=tau*l2;
-
-                  T l1=w0*l2 +w1*l3;
-                  if(l1>=0){
-                      Ls[valid]={l1,l2,l3};
-                      ++valid;
-                  }
-                }
-            }
-        }
-    }
 
 
     TOC(lt5);
@@ -278,6 +247,7 @@ int p3p_lambdatwist( Vector3<T> y1,
     Matrix<T,3,3> X(d12(0),d13(0),d12xd13(0),
                     d12(1),d13(1),d12xd13(1),
                     d12(2),d13(2),d12xd13(2));
+    // guaranteed to exist due to cross, and non degen
     X=X.inverse();
 
     for(int i=0;i<valid;++i){
