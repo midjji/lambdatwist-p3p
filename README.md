@@ -21,7 +21,7 @@ https://github.com/midjji/pnp/blob/master/p4p.h
  |  valid according to solver                | 16827636 | 17811966 | 24152163 |
  |  duplicates                               | 1        | 163697   | 379      |
  |  unique correct solutions                 | 16827635 | 16852892 | 16826255 |
- |  incorrect solutuons output by the solver | 0        | 795377   | 7325529  |
+ |  incorrect solutions output by the solver | 0        | 795377   | 7325529  |
 
  
 
