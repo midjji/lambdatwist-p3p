@@ -25,9 +25,9 @@ https://github.com/midjji/pnp/blob/master/p4p.h
 
  
 
-| Timer        | Total   | Mean    | Median  | Min     | Max     | Samples |
-|--------------|---------|---------|---------|---------|---------|----------|
-| Lambda Total | 12356ms | 2471ns  | 2469ns  | 2467ns  | 2478ns  | 5*10^6   |
-| ke Total     | 17241ms | 3448ns  | 3449ns  | 3436ns  | 3465ns  | 5*10^6   | 
-| Kneip Total  | 29s     | 5887ns  | 5870ns  | 5863ns  | 5965ns  | 5*10^6   |
+| Timer   | Total   | Mean    | Median  | Max     | Samples |
+|---------|---------|---------|---------|---------|---------|
+| Lambda  | 12s     | 2471ns  | 2469ns  | 2478ns  | 5000000 |
+| Ke      | 17s     | 3448ns  | 3449ns  | 3465ns  | 5000000 | 
+| Kneip   | 29s     | 5887ns  | 5870ns  | 5965ns  | 5000000 |
 
