@@ -19,11 +19,10 @@ https://github.com/midjji/pnp/blob/master/p4p.h
  |  ground truth found ratio                 | 0.999999 | 0.999724 | 0.99908  |
  |  no solution found                        | 4        | 337      | 772      |
  |  valid according to solver                | 16827636 | 17811966 | 24152163 |
- |  duplicates                               | 1        | 163697   | 379      |
- |  unique correct solutions                 | 16827635 | 16852892 | 16826255 |
  |  incorrect solutions output by the solver | 0        | 795377   | 7325529  |
 
- 
+Lambdatwist provides all unique correct solutions, solutions output by Ke, or Kneip in addition to these are either not unique, or not correct. 
+
 
 | Timer   | Total   | Mean    | Median  | Max     | Samples |
 |---------|---------|---------|---------|---------|---------|
