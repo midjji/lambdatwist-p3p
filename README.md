@@ -2,6 +2,12 @@
 A simple, easy to understand p3p solver with state of the art performance.
 http://openaccess.thecvf.com/content_ECCV_2018/html/Mikael_Persson_Lambda_Twist_An_ECCV_2018_paper.html
 
+As of 2022 the solver has been patched to address a missing special case which is described in my thesis: 
+https://www.diva-portal.org/smash/record.jsf?pid=diva2%3A1635583&dswid=3393
+
+Cite the latter if the special case is relevant, otherwise cite the ECCV publication. Preferably cite both of course :P. 
+
+
 
 This is the benchmark code. 
 
